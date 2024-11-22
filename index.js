@@ -94,39 +94,6 @@ app.get('/', async (req, res) => {
 app.listen(5000, function () {});
 console.log('Bot is running...')
 
-bot.on('photo', async (msg) => {
-  let chatId = msg.chat.id;
-  let getban = await getBanned(chatId);
-  if (!getban.status) return bot.sendMessage(chatId, `You have been banned\n\nReason : ${getban.reason}\n\nDo you want to be able to use bots again? Please contact the owner to request removal of the ban\nOwner : @Krxuvv`)
-  if (!fs.existsSync(`images/${chatId}`)) await fs.mkdirSync(`images/${chatId}`)
-  try {
-    let write = await bot.downloadFile(msg.photo[msg.photo.length - 1].file_id, `images/${chatId}`);
-    await bot.deleteMessage(msg.chat.id, msg.message_id);
-    let options = {
-      caption: `Please select the following option`,
-      reply_markup: JSON.stringify({
-        inline_keyboard: [
-          [{
-            text: `Extract Text [ OCR ]`,
-            callback_data: `ocr ${write}`
-          }],
-          [{
-            text: `Upload To Url V1 [ Telegraph ]`,
-            callback_data: `tourl1 ${write}`
-          }],
-          [{
-            text: `Upload To Url V2 [ Pomf2 ]`,
-            callback_data: `tourl2 ${write}`
-          }]
-        ]
-      })
-    }
-    return bot.sendPhoto(chatId, `${write}`, options)
-  } catch (err) {
-    return bot.sendMessage(String(process.env.DEV_ID), `Error Image Process: ${err}`);
-  }
-})
-
 // start
 bot.onText(/\/start/, async (msg) => {
   let getban = await getBanned(msg.chat.id);
